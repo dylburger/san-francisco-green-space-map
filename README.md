@@ -1,8 +1,12 @@
-### react-map-gl-starter
+### San Francisco Green Space Map
 
-This is a simple starter repository for making [`react-map-gl`](https://github.com/uber/react-map-gl) maps.
+Map of San Francisco public green spaces, POPOS, and other notable places.
+
+Built using Mapbox GL (with help from [`react-map-gl`](https://github.com/uber/react-map-gl)).
 
 ## What this includes
+
+This setup is based on the [`react-map-gl-starter`](https://github.com/dylburger/react-map-gl-starter) repo, and includes:
 
 * Starter map files in `src/components/maps/`
 * All the `npm` dependencies for `react-map-gl`
