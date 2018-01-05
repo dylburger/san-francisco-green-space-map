@@ -11,6 +11,7 @@
   "author": "Dylan J Sather",
   "license": "MIT",
   "dependencies": {
+    "d3-request": "^1.0.6",
     "dotenv": "^4.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
