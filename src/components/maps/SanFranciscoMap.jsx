@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactMapGL from 'react-map-gl';
+import {json as requestJson} from 'd3-request';
+import {fromJS} from 'immutable';
 
 import config from 'config';
+import {defaultMapStyle} from './mapStyle';
 
 // Code courtesy of react-map-gl examples
 class SanFranciscoMap extends React.Component {
@@ -19,6 +22,8 @@ class SanFranciscoMap extends React.Component {
     } = config.maps.sanFrancisco;
 
     this.state = {
+      mapStyle: defaultMapStyle,
+      data: null,
       viewport: {
         latitude,
         longitude,
@@ -34,11 +39,28 @@ class SanFranciscoMap extends React.Component {
   componentDidMount() {
     window.addEventListener('resize', this.resize);
     this.resize();
+
+    requestJson(
+      'public/geojson/sf_rec_parks_properties.geojson',
+      (error, response) => {
+        if (!error) {
+          this.loadData(response);
+        }
+      },
+    );
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize);
   }
+
+  loadData = data => {
+    const mapStyle = defaultMapStyle
+      // Add geojson source to map
+      .setIn(['sources', 'parks'], fromJS({type: 'geojson', data}));
+
+    this.setState({data, mapStyle});
+  };
 
   resize = () => {
     this.setState({
@@ -55,9 +77,10 @@ class SanFranciscoMap extends React.Component {
   };
 
   render() {
-    const {viewport} = this.state;
+    const {mapStyle, viewport} = this.state;
     return (
       <ReactMapGL
+        mapStyle={mapStyle}
         {...viewport}
         onViewportChange={this.updateViewport}
         mapboxApiAccessToken={config.mapbox.accessToken}
