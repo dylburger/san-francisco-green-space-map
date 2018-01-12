@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactMapGL, {Marker, Popup} from 'react-map-gl';
+import ReactMapGL from 'react-map-gl';
 
 import config from 'config';
-import Pin from './Pin';
 
 // Code courtesy of react-map-gl examples
 class SanFranciscoMap extends React.Component {
@@ -29,7 +28,6 @@ class SanFranciscoMap extends React.Component {
         width,
         height,
       },
-      popupInfo: null,
     };
   }
 
@@ -56,45 +54,14 @@ class SanFranciscoMap extends React.Component {
     this.setState({viewport});
   };
 
-  renderMarker = (place, index) => {
-    console.log('Place: ', place);
-    return (
-      <Marker
-        key={`marker-${index}`}
-        latitude={place.lat}
-        longitude={place.long}>
-        <Pin onClick={() => this.setState({popupInfo: place})} />
-      </Marker>
-    );
-  };
-
-  renderPopup() {
-    const {popupInfo} = this.state;
-
-    return (
-      popupInfo && (
-        <Popup
-          tipSize={5}
-          anchor="top"
-          longitude={popupInfo.long}
-          latitude={popupInfo.lat}
-          onClose={() => this.setState({popupInfo: null})}>
-          <div>{popupInfo.name}</div>
-        </Popup>
-      )
-    );
-  }
-
   render() {
     const {viewport} = this.state;
     return (
       <ReactMapGL
         {...viewport}
         onViewportChange={this.updateViewport}
-        mapboxApiAccessToken={config.mapbox.accessToken}>
-        {config.maps.sanFrancisco.markers.map(this.renderMarker)}
-        {this.renderPopup()}
-      </ReactMapGL>
+        mapboxApiAccessToken={config.mapbox.accessToken}
+      />
     );
   }
 }
