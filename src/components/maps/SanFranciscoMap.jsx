@@ -1,9 +1,18 @@
 import React from 'react';
-import ReactMapGL from 'react-map-gl';
+import mapboxgl from 'mapbox-gl';
 
 import config from 'config';
+import data from 'geojson/sf_rec_parks_properties.json';
 
-// Code courtesy of react-map-gl examples
+const options = [
+  {
+    name: 'Parks',
+    description: 'Parks',
+    property: 'parks',
+    fillColor: '#1e932d',
+  },
+];
+
 class SanFranciscoMap extends React.Component {
   constructor(props) {
     super(props);
@@ -19,48 +28,63 @@ class SanFranciscoMap extends React.Component {
     } = config.maps.sanFrancisco;
 
     this.state = {
-      viewport: {
-        latitude,
-        longitude,
-        zoom,
-        bearing,
-        pitch,
-        width,
-        height,
-      },
+      active: options[0],
+      latitude,
+      longitude,
+      zoom,
+      bearing,
+      pitch,
+      width,
+      height,
     };
   }
 
+  componentWillMount() {
+    mapboxgl.accessToken = config.mapbox.accessToken;
+  }
+
   componentDidMount() {
-    window.addEventListener('resize', this.resize);
-    this.resize();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.resize);
-  }
-
-  resize = () => {
-    this.setState({
-      viewport: {
-        ...this.state.viewport,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      },
+    const {latitude, longitude, zoom} = this.state;
+    this.map = new mapboxgl.Map({
+      container: this.mapContainer,
+      style: 'mapbox://styles/dylburger/cjccuciq62k5o2rqw7ha6gp1p',
+      center: [longitude, latitude],
+      zoom,
     });
-  };
 
-  updateViewport = viewport => {
-    this.setState({viewport});
-  };
+    this.map.on('load', () => {
+      this.map.addSource('parks', {
+        type: 'geojson',
+        data,
+      });
+
+      this.map.addLayer(
+        {
+          id: 'parks',
+          type: 'fill',
+          source: 'parks',
+        },
+        'country-label-lg',
+      ); // ID matches `mapbox/streets-v9`
+
+      this.setFill();
+    });
+  }
+
+  componentDidUpdate() {
+    this.setFill();
+  }
+
+  setFill() {
+    const {fillColor} = this.state.active;
+    this.map.setPaintProperty('parks', 'fill-color', fillColor);
+  }
 
   render() {
-    const {viewport} = this.state;
     return (
-      <ReactMapGL
-        {...viewport}
-        onViewportChange={this.updateViewport}
-        mapboxApiAccessToken={config.mapbox.accessToken}
+      <div
+        ref={el => (this.mapContainer = el)}
+        className="absolute top right left bottom"
       />
     );
   }
