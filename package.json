@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "dev-build": "webpack --watch"
+    "dev-build": "webpack --watch",
+    "start": "webpack-dev-server --open"
   },
   "author": "Dylan J Sather",
   "license": "MIT",
@@ -40,6 +41,7 @@
     "eslint-plugin-react": "^7.5.1",
     "jest": "^22.0.4",
     "prettier": "^1.9.2",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.10.1"
   }
 }

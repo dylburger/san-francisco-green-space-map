@@ -17,6 +17,7 @@ module.exports = {
         paths: [
           path.resolve(__dirname, 'config'),
           path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'public'),
         ],
       },
     },
