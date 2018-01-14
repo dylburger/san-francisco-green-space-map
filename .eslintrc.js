@@ -6,6 +6,7 @@ module.exports = {
   },
   parser: 'babel-eslint',
   rules: {
+    'no-plusplus': ['error', {allowForLoopAfterthoughts: true}],
     'jsx-a11y/href-no-hash': 'off',
     'jsx-a11y/anchor-is-valid': ['warn', {aspects: ['invalidHref']}],
     'react/jsx-filename-extension': [1, {extensions: ['.js', '.jsx']}],
@@ -17,6 +18,7 @@ module.exports = {
         paths: [
           path.resolve(__dirname, 'config'),
           path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'public'),
         ],
       },
     },

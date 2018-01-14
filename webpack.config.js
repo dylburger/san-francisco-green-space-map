@@ -7,6 +7,9 @@ module.exports = {
     path: path.join(__dirname, '/public'),
     filename: 'bundle.js',
   },
+  devServer: {
+    contentBase: './public',
+  },
   module: {
     loaders: [
       {
@@ -20,6 +23,7 @@ module.exports = {
     modules: [
       path.join(__dirname, '/config'),
       path.join(__dirname, '/src'),
+      path.join(__dirname, '/public'),
       path.join(__dirname, '/node_modules'),
     ],
     extensions: ['.js', '.jsx'],

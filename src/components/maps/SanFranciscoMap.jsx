@@ -1,10 +1,8 @@
 import React from 'react';
-import ReactMapGL, {Marker, Popup} from 'react-map-gl';
+import mapboxgl from 'mapbox-gl';
 
 import config from 'config';
-import Pin from './Pin';
 
-// Code courtesy of react-map-gl examples
 class SanFranciscoMap extends React.Component {
   constructor(props) {
     super(props);
@@ -20,81 +18,90 @@ class SanFranciscoMap extends React.Component {
     } = config.maps.sanFrancisco;
 
     this.state = {
-      viewport: {
-        latitude,
-        longitude,
-        zoom,
-        bearing,
-        pitch,
-        width,
-        height,
-      },
-      popupInfo: null,
+      latitude,
+      longitude,
+      zoom,
+      bearing,
+      pitch,
+      width,
+      height,
     };
   }
 
+  componentWillMount() {
+    mapboxgl.accessToken = config.mapbox.accessToken;
+  }
+
   componentDidMount() {
-    window.addEventListener('resize', this.resize);
-    this.resize();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.resize);
-  }
-
-  resize = () => {
-    this.setState({
-      viewport: {
-        ...this.state.viewport,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      },
+    const {latitude, longitude, zoom, pitch, bearing} = this.state;
+    this.map = new mapboxgl.Map({
+      container: this.mapContainer,
+      style: 'mapbox://styles/mapbox/light-v9',
+      center: [longitude, latitude],
+      zoom,
+      pitch,
+      bearing,
     });
-  };
 
-  updateViewport = viewport => {
-    this.setState({viewport});
-  };
+    // Thanks to the Mapbox docs for this example of loading 3D building data.
+    // https://www.mapbox.com/mapbox-gl-js/example/3d-buildings/
+    this.map.on('load', () => {
+      // Insert the layer beneath any symbol layer.
+      const layers = this.map.getStyle().layers;
 
-  renderMarker = (place, index) => {
-    console.log('Place: ', place);
-    return (
-      <Marker
-        key={`marker-${index}`}
-        latitude={place.lat}
-        longitude={place.long}>
-        <Pin onClick={() => this.setState({popupInfo: place})} />
-      </Marker>
-    );
-  };
+      let labelLayerId;
+      for (let i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+          labelLayerId = layers[i].id;
+          break;
+        }
+      }
 
-  renderPopup() {
-    const {popupInfo} = this.state;
+      this.map.addLayer(
+        {
+          id: '3d-buildings',
+          source: 'composite',
+          'source-layer': 'building',
+          filter: ['==', 'extrude', 'true'],
+          type: 'fill-extrusion',
+          minzoom: 15,
+          paint: {
+            'fill-extrusion-color': '#aaa',
 
-    return (
-      popupInfo && (
-        <Popup
-          tipSize={5}
-          anchor="top"
-          longitude={popupInfo.long}
-          latitude={popupInfo.lat}
-          onClose={() => this.setState({popupInfo: null})}>
-          <div>{popupInfo.name}</div>
-        </Popup>
-      )
-    );
+            // use an 'interpolate' expression to add a smooth transition effect to the
+            // buildings as the user zooms in
+            'fill-extrusion-height': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              15,
+              0,
+              15.05,
+              ['get', 'height'],
+            ],
+            'fill-extrusion-base': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              15,
+              0,
+              15.05,
+              ['get', 'min_height'],
+            ],
+            'fill-extrusion-opacity': 0.6,
+          },
+        },
+        labelLayerId,
+      );
+    });
   }
 
   render() {
-    const {viewport} = this.state;
     return (
-      <ReactMapGL
-        {...viewport}
-        onViewportChange={this.updateViewport}
-        mapboxApiAccessToken={config.mapbox.accessToken}>
-        {config.maps.sanFrancisco.markers.map(this.renderMarker)}
-        {this.renderPopup()}
-      </ReactMapGL>
+      <div
+        ref={el => (this.mapContainer = el)} // eslint-disable-line no-return-assign
+        className="absolute top right left bottom"
+      />
     );
   }
 }
