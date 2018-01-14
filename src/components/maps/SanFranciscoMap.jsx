@@ -104,6 +104,11 @@ class SanFranciscoMap extends React.Component {
           // make a marker for each feature and add to the map
           new mapboxgl.Marker(renderMarker())
             .setLngLat(park.location_1.coordinates)
+            .setPopup(
+              new mapboxgl.Popup({offset: 25}).setHTML(
+                '<h3>Name:' + park.parkname,
+              ),
+            )
             .addTo(this.map);
         }
       }
