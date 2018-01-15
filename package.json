@@ -12,6 +12,7 @@
   "author": "Dylan J Sather",
   "license": "MIT",
   "dependencies": {
+    "@mapbox/maki": "^4.0.0",
     "d3-request": "^1.0.6",
     "dotenv": "^4.0.0",
     "mapbox-gl": "^0.43.0",
