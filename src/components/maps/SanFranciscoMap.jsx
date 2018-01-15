@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 
 import config from 'config';
 import parks from 'data/sf_parks_metadata.json';
-import renderMarker from './renderMarker';
+import renderPin from './renderPin';
 
 class SanFranciscoMap extends React.Component {
   constructor(props) {
@@ -102,7 +102,7 @@ class SanFranciscoMap extends React.Component {
       if ('location_1' in park) {
         if ('coordinates' in park.location_1) {
           // make a marker for each feature and add to the map
-          new mapboxgl.Marker(renderMarker())
+          new mapboxgl.Marker(renderPin('#228B22'))
             .setLngLat(park.location_1.coordinates)
             .setPopup(
               new mapboxgl.Popup({offset: 25}).setHTML(
