@@ -21,12 +21,13 @@ const Pin = ({fill, size, onClick}) => (
 );
 
 Pin.propTypes = {
-  fill: string.isRequired,
+  fill: string,
   onClick: func.isRequired,
   size: number,
 };
 
 Pin.defaultProps = {
+  fill: '#228B22',
   size: 20,
 };
 

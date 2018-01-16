@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 
 import config from 'config';
 import parks from 'data/sf_parks_metadata.json';
+import renderMarker from './renderMarker';
 import renderPin from './renderPin';
 
 class SanFranciscoMap extends React.Component {
@@ -101,12 +102,21 @@ class SanFranciscoMap extends React.Component {
     parks.forEach(park => {
       if ('location_1' in park) {
         if ('coordinates' in park.location_1) {
+          let el = '';
+          switch (park.parktype) {
+            case 'Mini Park':
+              el = renderMarker('img/park-15.svg');
+              break;
+            default:
+              el = renderPin('#228B22');
+          }
+
           // make a marker for each feature and add to the map
-          new mapboxgl.Marker(renderPin('#228B22'))
+          new mapboxgl.Marker(el)
             .setLngLat(park.location_1.coordinates)
             .setPopup(
               new mapboxgl.Popup({offset: 25}).setHTML(
-                '<h3>Name:' + park.parkname,
+                `<h3>Name: ${park.parkname}`,
               ),
             )
             .addTo(this.map);
